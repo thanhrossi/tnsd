@@ -4,7 +4,7 @@
 	require_once 'inc/foundation_menu/foundation4-topbar-walker.php';
 	//add post thumbnail
 	add_theme_support( 'post-thumbnails' ); 
-	
+	require_once 'inc/short_code/shortcode.php';
 	add_action( 'widgets_init', 'my_sidebars' );
 
 	function my_sidebars() {
@@ -64,13 +64,7 @@
         define( 'OPTIONS_FRAMEWORK_DIRECTORY', get_template_directory_uri() . '/inc/' );
         require_once dirname( __FILE__ ) . '/inc/options-framework.php';
 	}
-	// short code
-	// flex video
-function video_shortcode( $atts , $content = null ) {
 
-	return '<div class="flex-video">'.$content.'</div>';
-}
-add_shortcode( 'video', 'video_shortcode' );
 
 	// pagination
 	function kriesi_pagination($pages = '', $range = 2)
@@ -111,26 +105,69 @@ add_shortcode( 'video', 'video_shortcode' );
 	         echo "</div>\n";
 	     }
 	}
-	
-	// <!-- conflict jquery -->
-	// function zf_topbar(){
-	// 	if ( !is_admin() ) {
-	// 	wp_deregister_script('jquery');
-	// 	wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.9/jquery.min.js', false, '1.9');
-	// 	wp_enqueue_script('jquery');
-	// }
-	// }
-	// add_action( 'wp_enqueue_scripts', 'zf_topbar' );
-function current_jquery($version) {
-        global $wp_scripts;
-        if ( ( version_compare($version, $wp_scripts -> registered[jquery] -> ver) == 1 ) && !is_admin() ) {
-                wp_deregister_script('jquery'); 
 
-                wp_register_script('jquery',
-                        'http://ajax.googleapis.com/ajax/libs/jquery/'.$version.'/jquery.min.js',
-                        false, $version);
-        }
+	// jasdsad
+	// Disable WordPress version reporting as a basic protection against attacks
+function remove_generators() {
+        return '';
+}
+add_filter('the_generator','remove_generators');
+// Disable the admin bar, set to true if you want it to be visible.
+show_admin_bar(FALSE);
+// Add theme support for Automatic Feed Links
+add_theme_support( 'automatic-feed-links' );
+// Enqueue CSS and scripts
+
+function load_tt_scripts() {
+        global $wp_styles;
+        wp_enqueue_style(
+                'normalize',
+                get_template_directory_uri() . '/css/normalize.css',
+                array(),
+                '2.1.2',
+                'all'
+        );
+        wp_enqueue_style(
+                'foundation_css',
+                get_template_directory_uri() . '/css/foundation.min.css',
+                array('normalize'),
+                '5.0.2',
+                'all'
+        );
+        wp_enqueue_style(
+                'foundation_ie8_grid',
+                get_template_directory_uri() . '/css/ie8-grid-foundation-4.css',
+                array( 'foundation_css' ),
+                '1.0',
+                'all'
+        );
+        $wp_styles->add_data( 'foundation_ie8_grid', 'conditional', 'lt IE 8' );
+        wp_enqueue_script(
+                'foundation_modernizr_js',
+                get_template_directory_uri() . '/js/custom.modernizr.js',
+                array(),
+                '2.6.2',
+                false
+        );
+       
+        wp_enqueue_script(
+                'foundation_js',
+                get_template_directory_uri() . '/js/foundation.min.js',
+                array('jquery'),
+                '5.0.2',
+                true
+        );
+        wp_enqueue_script(
+                'foundation_init_js',
+                get_template_directory_uri() . '/js/foundation_init.js',
+                array('foundation_js'),
+                '1.0',
+                true
+        );
 }
 
-add_action( 'wp_head', current_jquery( '2.0.3' ) ); // change number to latest version
+add_action('wp_enqueue_scripts', 'load_tt_scripts',0);
+
+
+
  ?>
